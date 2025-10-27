@@ -164,3 +164,13 @@ frame_progress = 0.74580437
 unique_name_in_owner = true
 position = Vector2(0, -17)
 shape = SubResource("RectangleShape2D_kysaj")
+
+[node name="CoyoteTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.1
+one_shot = true
+
+[node name="JumpRequestTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.1
+one_shot = true
