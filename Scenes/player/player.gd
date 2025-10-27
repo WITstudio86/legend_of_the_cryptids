@@ -1,3 +1,4 @@
+class_name Player
 extends CharacterBody2D
 
 const SPEED = 160.0
@@ -6,6 +7,7 @@ const AIR_ACCELERATION = SPEED / 0.02 # 空中变化速度更快
 const JUMP_VELOCITY = -320.0
 #获得重力
 var gravity = ProjectSettings.get("physics/2d/default_gravity")
+var should_jump
 @onready var collision_shape_2d: CollisionShape2D = %CollisionShape2D
 @onready var animated_sprite_2d: AnimatedSprite2D = %AnimatedSprite2D
 @onready var coyote_timer: Timer = %CoyoteTimer
@@ -37,31 +39,12 @@ func _physics_process(delta: float) -> void:
 	# 跳跃
 	# 在地板上或者处于 coyote time 都可以跳跃
 	var can_jump = is_on_floor() or coyote_timer.time_left > 0
-	var should_jump = jump_request_timer.time_left > 0 and can_jump
+	should_jump = jump_request_timer.time_left > 0 and can_jump
 	if should_jump:
 		velocity.y = JUMP_VELOCITY
-	# 实现动画
-	if is_on_floor():
-		# 在地板上方向为 0 且速度为 0 的时候静止
-		if is_zero_approx(direction) and is_zero_approx(velocity.x):
-			animated_sprite_2d.play("idle")
-		else:
-			# 不为零的时候
-			animated_sprite_2d.play("runing")
-	else:
-		animated_sprite_2d.play("jump")
+
 	# 实现左右反转,不近乎为 0 的时候
 	if not is_zero_approx(direction):
 		animated_sprite_2d.flip_h = direction < 0
 	
-	# 实现郊狼时间: 移动之前记录在地板上的状态 , 移动之后判断是否相同 , 
-	# 不同且之前在地板上的时候开启时间
-	var was_on_floor = is_on_floor()
 	move_and_slide()
-	if is_on_floor() != was_on_floor:
-		# 曾经在地板上并且不是因为按下空格跳跃改变的状态
-		if was_on_floor and not should_jump:
-			# 那么开启cayote time
-			coyote_timer.start()
-		else:
-			coyote_timer.stop()
