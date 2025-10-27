@@ -1,7 +1,25 @@
-[gd_scene load_steps=23 format=3 uid="uid://b2kjra08f3yr"]
+[gd_scene load_steps=35 format=3 uid="uid://b2kjra08f3yr"]
 
 [ext_resource type="Texture2D" uid="uid://dqpyeedqcn6kt" path="res://assets/generic_char_v0.2/png/blue/char_blue_1.png" id="1_8p05u"]
 [ext_resource type="Script" uid="uid://5eye4f7mi8er" path="res://Scenes/player/player.gd" id="1_eo61r"]
+[ext_resource type="Script" uid="uid://bqh2sk1e1soxr" path="res://Scenes/StateMachine/state_machine.gd" id="3_mxepk"]
+[ext_resource type="Script" uid="uid://cmfivtv0hwhx8" path="res://Scenes/player/states/idle.gd" id="4_6upyo"]
+[ext_resource type="Script" uid="uid://cs1dukph2ljes" path="res://Scenes/player/states/running.gd" id="5_xxarj"]
+[ext_resource type="Script" uid="uid://dv63604e5x4ps" path="res://Scenes/player/states/jump.gd" id="6_6k3cy"]
+[ext_resource type="Script" uid="uid://vo067bs24e5j" path="res://Scenes/player/states/fall.gd" id="7_xxarj"]
+[ext_resource type="Script" uid="uid://vqahs8fsfjlc" path="res://Scenes/player/states/landing.gd" id="8_6k3cy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dpkfr"]
+atlas = ExtResource("1_8p05u")
+region = Rect2(112, 224, 56, 56)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kysaj"]
+atlas = ExtResource("1_8p05u")
+region = Rect2(168, 224, 56, 56)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_egohg"]
+atlas = ExtResource("1_8p05u")
+region = Rect2(224, 224, 56, 56)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_eo61r"]
 atlas = ExtResource("1_8p05u")
@@ -43,6 +61,18 @@ region = Rect2(224, 168, 56, 56)
 atlas = ExtResource("1_8p05u")
 region = Rect2(280, 168, 56, 56)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_ua3np"]
+atlas = ExtResource("1_8p05u")
+region = Rect2(224, 224, 56, 56)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mnu3u"]
+atlas = ExtResource("1_8p05u")
+region = Rect2(280, 224, 56, 56)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rwmec"]
+atlas = ExtResource("1_8p05u")
+region = Rect2(336, 224, 56, 56)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_uawwb"]
 atlas = ExtResource("1_8p05u")
 region = Rect2(0, 112, 56, 56)
@@ -77,6 +107,20 @@ region = Rect2(392, 112, 56, 56)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_dpkfr"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dpkfr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kysaj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_egohg")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 11.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_eo61r")
@@ -118,6 +162,20 @@ animations = [{
 "speed": 10.0
 }, {
 "frames": [{
+"duration": 0.2,
+"texture": SubResource("AtlasTexture_ua3np")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mnu3u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rwmec")
+}],
+"loop": false,
+"name": &"landing",
+"speed": 12.0
+}, {
+"frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_uawwb")
 }, {
@@ -157,10 +215,45 @@ script = ExtResource("1_eo61r")
 unique_name_in_owner = true
 position = Vector2(0, -29)
 sprite_frames = SubResource("SpriteFrames_dpkfr")
-animation = &"runing"
-frame_progress = 0.74580437
+animation = &"landing"
+frame = 1
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(0, -17)
 shape = SubResource("RectangleShape2D_kysaj")
+
+[node name="CoyoteTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.1
+one_shot = true
+
+[node name="JumpRequestTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.1
+one_shot = true
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("inital_state")]
+script = ExtResource("3_mxepk")
+inital_state = NodePath("PlayerIdle")
+
+[node name="PlayerIdle" type="Node" parent="StateMachine"]
+script = ExtResource("4_6upyo")
+metadata/_custom_type_script = "uid://cmfivtv0hwhx8"
+
+[node name="PlayerRunning" type="Node" parent="StateMachine"]
+script = ExtResource("5_xxarj")
+metadata/_custom_type_script = "uid://cs1dukph2ljes"
+
+[node name="PlayerJump" type="Node" parent="StateMachine"]
+script = ExtResource("6_6k3cy")
+metadata/_custom_type_script = "uid://dv63604e5x4ps"
+
+[node name="PlayerFall" type="Node" parent="StateMachine"]
+script = ExtResource("7_xxarj")
+metadata/_custom_type_script = "uid://vo067bs24e5j"
+
+[node name="PlayerLanding" type="Node" parent="StateMachine"]
+script = ExtResource("8_6k3cy")
+metadata/_custom_type_script = "uid://vqahs8fsfjlc"
